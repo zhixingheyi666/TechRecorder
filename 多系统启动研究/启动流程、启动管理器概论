@@ -32,11 +32,39 @@
             启动环境配置软件：BCDboot
             启动参数配置文件：BCD，不带扩展名，一般位于系统分区根目录的boot文件夹中
             启动参数配置修改软件:BCDboot、BCDedit、EasyBCD和BOOTICE(非专属)
+            目前官方开发和支持网站：
+                https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-vista/cc709667(v=ws.10)
+                https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-vista/cc749177(v%3dws.10)
         .linux 系统启动管理器
             .Grub
                 Grub是Linux环境中，目前最流行的启动管理器
                 <todo:请补充完整相关资料>
         .grub4dos 启动管理器
+            重要提示<SF>：grub4dos是基于GNU Grub的，因此应当拥有几乎grub的所有功能语法
+                猜测grub4dos增加了在win、dos系统下安装运行配置的扩展功能
+                grub4dos可以视作具有了跨系统能力的grub
+                帮助文件过时散乱，官方没有编译好的可以在win下操作的软件包
+                ·主要靠bootice执行配置安装操作
+            核心引导文件<SF>：grldr、menu.lst和grub.exe
+                .<SF>这里的grub.exe应该是win系统下grub4dos的安装配置文件
+                    而非开机引导文件，因为老毛桃启动U盘启动分区不包含grub.exe
+                .需要中文支持，就用 chinese 子目录中的文件
+            启动环境配置软件：BOOTICE(非专属)，另猜测win系统下是grub.exe，linux系统下<SF尚未探究>
+            启动参数配置文件：主要为menu.lst和grldr，一般位于系统分区根目录中,其他尚未研究
+            启动参数配置修改软件:BOOTICE(非专属)
+                .BOOTICE可以直接编辑grldr，如果直接用记事本打开grldr是乱码
+                .menu.lst可以直接使用记事本等文本编辑器直接修改
+            目前官方开发和支持网站：
+                .github
+                    https://github.com/chenall/grub4dos
+                .开发者网址
+                    http://grub4dos.chenall.net/
+                .开发者技术文章，注意是按年分类的，可以向后翻
+                    http://chenall.net/categories/GRUB4DOS/
+                .目前技术论坛<20180429>
+                    .无忧启动，上面有grub4dos专区，当然其他启动引导的资料很多
+                        http://bbs.wuyou.net/forum.php
+                        http://bbs.wuyou.net/forum.php?mod=forumdisplay&fid=60
                 <todo:请补充完整相关资料>
 
 --------------------------------<<参考链接>>-------------------------------------------

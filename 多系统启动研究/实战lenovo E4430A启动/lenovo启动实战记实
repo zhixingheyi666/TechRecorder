@@ -1,0 +1,168 @@
+1.原启动安排
+    .下载了EasyBCD，通过这个软件在固态win7系统下，添加另外两个系统的引导
+        后来这个软件报错，重装也报错，就是不能用了
+        但仍然可以通过它之前的设定访问linux系统
+        它在win的BCD文件中添加了linux的启动项
+            启动磁盘和分区都是第一主分区，而不是linux系统所在的第二主分区
+            启动文件时它生成的AutoNeoGrub0.mbr
+            这个文件位于第一主分区的根目录或者指定目录下，如果删除将不能引导linux系统
+    .交叉启动
+        linux是grub启动管理器，我在其启动菜单又设定了固态win7的启动项
+        所以进入grub启动管理界面后，仍然可以通过选项重新启动固态win7
+            本意是直接使用grub管理两个当时的两个系统
+            但是后来不知何故grub，没有写入MBR,反而是win7的引导占领了MBR
+2.win启动管理器探究
+    .cmd命令行下，使用如下命令可以复制完整的启动环境、启动文件
+        bcdboot c:\windows /s h:
+        如果h是U盘，那么命令执行完毕后，这个U盘就成为了一个可启动U盘，可以引导win系统
+        根目录下会有bootmgr文件和boot文件夹，boot文件夹中有BCD文件
+        编辑BCD文件可以配置启动界面的启动项
+        ·这里BOOTICE这个软件提供BCD编辑功能，有智能和高级模式
+            可以对当前系统的BCD实时编辑，特别推荐
+        ·但我并未探索如何在win启动管理器实现linux系统引导，也就是EasyBCD实现linux系统引导的原理
+    .错误的BCD文件或者MBR可能导致OEM正版激活失效
+        .固态win系统下的BCD文件，如果删除其对本系统的启动项
+            仅保留它对其他分区的系统的启动项的情况下
+            如果此时通过U盘或者其他方式引导进入这个系统
+            就会出现盗版提示,恢复BCD文件，盗版提示消失
+3.BOOTICE实用操作介绍
+    ·利用这个软件完全可以自行制作实现老毛桃启动U盘所有功能、特性
+    .利用本软件可以判定引导记录的类型
+        选定要判定的磁盘-->主引导记录
+            此时下方 当前引导记录 框内就会显示出磁盘的当前主引导记录类型
+        选定要判定的磁盘-->分区引导记录
+            此时下方 当前引导记录 框内就会显示出磁盘的当前分区引导记录类型
+    .移动存储设备分区(USB-HDD)
+        .分区管理-->重新分区-->USB-HDD模式(多分区)
+        .注：a.有分区表，整个磁盘划分为多个主分区(最多4个)
+             b.对于可移动磁盘，只有分区表中的第一个分区(SF，我认为是 其中一个分区 )
+                在Windos下可以被访问
+    .设置分区可见性
+        .分区管理-->设为可见
+            设为可见 与 隐藏、显现 是不同的概念
+            隐藏 与 显现 是互逆的两个操作
+            根据上面USB-HDD模式，win下仅有一个分区可以被访问
+            所以各分区间的可访问性是互斥的，设置一个分区为 可访问，那么另外的分区必然就变成 不可访问
+            设为可见 就是设置win下U盘上分区的可访问性，因为可访问性的必要条件是分区是非隐藏的
+            所以 设为可见 的操作会先将分区设置为 非隐藏，然后再执行可见性的其他必要设置
+            还可以推论出(也是实际检验过的)，显现并不能使U盘的分区在win7系统下可见
+            同理用其他分区工具 取消隐藏 也并不能使U盘的某个分区可见
+    .制作启动U盘
+    .备份MBR、PBR、分区表
+    .修改grldr文件
+        实用工具-->启动编辑器-->打开文件菜单-->浏览到要编辑的grldr或者menu.lst文件
+        修改编辑-->保存退出即可
+    .修改BCD文件
+    .安装启动引导
+    .官方网址、支持网址等
+        .未找到github地址
+            http://www.ipauly.com/
+            http://www.ipauly.com/2015/11/15/bootice/
+
+3.grub4dos的安装和简单配置，实现开机进入Work系统，U盘进入Developer系统
+    ·实现开机进入Work系统
+        .通过BOOTICE安装grub4dos到固态MBR
+            选择不把原MBR备份到第二扇区,不默认启动原MBR
+            这样开机就不会通过原MBR进入固态win7系统，而是进入机械硬盘的Worker系统
+        .把老毛桃启动U盘中的grldr拷贝到固态第一分主区根目录下，同时创建menu.lst
+            这里我借用了老毛桃启动U盘的grldr，原因是没找到官方编译好的文件的下载地址
+            .首先用BOOTICE把老毛桃的grldr设置还原成默认配置，如下
+                pxe detect
+                configfile
+                default 0
+                timeout 15
+                title find /menu.lst, /boot/grub/menu.lst, /grub/menu.lst
+                errorcheck off
+                configfile /menu.lst
+                configfile /boot/grub/menu.lst
+                configfile /grub/menu.lst
+                find --set-root --ignore-floppies --ignore-cd /menu.lst && configfile /menu.lst
+                find --set-root --ignore-floppies --ignore-cd /boot/grub/menu.lst && configfile /boot/grub/menu.lst
+                find --set-root --ignore-floppies --ignore-cd /grub/menu.lst && configfile /grub/menu.lst
+                errorcheck on
+                commandline
+                title commandline
+                commandline
+                title reboot
+                reboot
+                title halt
+                halt
+            .固态第一分区menu.lst文件内容如下
+                color black/black
+                timeout 0
+                default 0
+
+                title
+                rootnoverify (hd1,3)
+                chainloader +1
+
+                .备注
+                    暂时没找到如何屏蔽grub4dos启动菜单的参数，BCD体系可以直接设置不显示启动菜单
+                    故设置color使得启动菜单不可见
+                    grub4dos引导的时候，会在显示屏上输出步骤回显，暂时没找到屏蔽办法
+                    要想屏蔽回显，估计只能自行修改编译源代码了
+    ·U盘进入Developer
+        ·特别提示：插入U盘或者可移动磁盘的数量会影响(hd*,*)的编号
+            所以存储设备包括移动存储设备增减时，启动配置文件可能会由于(hd*,*)编号改变而失效
+            此时可以进入命令行，手动启动
+        .通过BOOTICE对启动U盘重新分区
+        .安装grub4dos到启动U盘MBR
+        .把老毛桃启动U盘中的grldr拷贝到启动分主区根目录下，同时创建menu.lst
+            这里我借用了老毛桃启动U盘的grldr，原因是没找到官方编译好的文件的下载地址
+            .首先用BOOTICE把老毛桃的grldr设置还原成默认配置，如下
+                pxe detect
+                configfile
+                default 0
+                timeout 15
+                title find /menu.lst, /boot/grub/menu.lst, /grub/menu.lst
+                errorcheck off
+                configfile /menu.lst
+                configfile /boot/grub/menu.lst
+                configfile /grub/menu.lst
+                find --set-root --ignore-floppies --ignore-cd /menu.lst && configfile /menu.lst
+                find --set-root --ignore-floppies --ignore-cd /boot/grub/menu.lst && configfile /boot/grub/menu.lst
+                find --set-root --ignore-floppies --ignore-cd /grub/menu.lst && configfile /grub/menu.lst
+                errorcheck on
+                commandline
+                title commandline
+                commandline
+                title reboot
+                reboot
+                title halt
+                halt
+            .启动分区menu.lst文件内容如下
+                #debug off
+                color black/black
+                timeout 1
+                default 0
+
+                title Win7 Developer hd1 0
+                rootnoverify (hd1,0)
+                makeactive
+                chainloader +1
+
+                title Win7 Worker hd2 3
+                rootnoverify (hd2,3)
+                makeactive
+                chainloader +1
+
+                title Try For Local OS
+                find --set-root --ignore-floppies --ignore-cd /ntldr || find --set-root --ignore-floppies --ignore-cd /bootmgr
+                map () (hd0)
+                map (hd0) ()
+                map --rehook
+                find --set-root --ignore-floppies --ignore-cd /ntldr || find --set-root --ignore-floppies --ignore-cd /bootmgr
+                chainloader /ntldr || chainloader /bootmgr
+                title REBOOT
+                reboot
+                title HALT
+                halt
+
+                 .备注
+                     由于插入了U盘，本地固态硬盘的序号由(hd0,*)变更成(hd1,*)，本地机械硬盘序号变更为(hd2,*)
+                     Try For Local OS 实测不可用，还需调整命令和参数再测
+                     暂时没找到如何屏蔽grub4dos启动菜单的参数，BCD体系可以直接设置不显示启动菜单
+                     故设置color使得启动菜单不可见
+                     grub4dos引导的时候，会在显示屏上输出步骤回显，暂时没找到屏蔽办法
+                     要想屏蔽回显，估计只能自行修改编译源代码了
+        .通过BOOTICE设置U盘启动分区为 不可见 ，保护启动配置文件不被随意修改
