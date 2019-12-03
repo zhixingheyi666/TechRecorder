@@ -1,0 +1,192 @@
+﻿;=====================self自我说明- Ahk  ======================================================
+;1.注释使用 分号
+;2.叹号!,表示Alt
+;3.向上箭头^,表示Ctrl
+;4.井号#表示WIN键
+
+; *********** 由于Alt常用，故我改用大写键映射的<上下左右>键***********
+CapsLock & h::Send, {Left}
+CapsLock & l::Send, {Right}
+CapsLock & j::Send, {Down}
+CapsLock & k::Send, {Up}
+
+; *********** 注释掉Alt+JKLI实现的<上下左右>键 注：由于Alt常用，故我改用大写键映射的***********
+; !l::Send, {Left}
+; !h::Send, {Right}
+; !j::Send, {Down}
+; !k::Send, {Up}
+
+; *********** 改掉大写键（CapsLk）,使其映射为回车(Enter) ***********
+; self:原本系统中Alt + CapsLock 或者 Ctrl + CapsLock 就有切换大小写功能
+; replace CapsLock to LeftEnter
+$CapsLock::Enter
+
+; self:下面经过测试，连续按几次，会进入一个按键失灵的混乱状态.或许是一个bug
+; <!CapsLock::SetCapsLockState, % GetKeyState("CapsLock", "T") ? "Off" : "On"    ; CapsLock = Alt CapsLock
+
+;=====================self - 实用命令 ======================================================
+
+;Alt+F打开文件夹 d:\python_learn
+!f::Run,d:\python_learn
+
+;WIN+a键打开firefox浏览器
+#a::Run, firefox.exe,
+
+;----------------------废弃条目--------------------------------------------------
+    ;!p::Run, D:\python_learn\powershell.exe.lnk ptpython
+    ;CapsLock & a::Run, d:\python_learn\spider
+;=====================self - 实用命令 ======================================================
+
+; *********** Wox (Run/Activate) ***********
+!Space::
+{
+    DetectHiddenWindows, on
+    ifWinNotExist ahk_class HwndWrapper
+        Run C:\Users\lenovo\AppData\Local\Wox\Update.exe --processStart Wox.exe
+    else
+        ifWinNotActive ahk_class HwndWrapper
+            WinActivate
+    Return
+}
+
+
+;=====================虚拟桌面 - Ahk  ======================================================
+;Autohotkey的脚本，实现虚拟桌面的功能，快捷键Alt+1，2，3，4
+SetBatchLines, -1       ; maximize script speed!  
+SetWinDelay, -1  
+OnExit, CleanUp         ; clean up in case of error (otherwise some windows will get lost)  
+numDesktops := 4        ; maximum number of desktops  
+curDesktop := 1         ; index number of current desktop  
+WinGet, windows1, List  ; get list of all currently visible windows
+
+; ***** 切换虚拟桌面的快捷键hotkeys *****
+; ***** Alt+数字 *****
+!5::SwitchToDesktop(1)
+!2::SwitchToDesktop(2)
+!3::SwitchToDesktop(3)
+!4::SwitchToDesktop(4)
+^!1::SendActiveToDesktop(1)
+^!2::SendActiveToDesktop(2)
+^!3::SendActiveToDesktop(3)
+^!4::SendActiveToDesktop(4)
+!0::ExitApp
+
+;=====================向导创建文件自带环境设定 - Ahk  ====================================================
+#NoEnv                  ; Recommended for performance and compatibility with future AutoHotkey releases.
+; #Warn                 ; Enable warnings to assist with detecting common errors.
+SendMode Input          ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir%     ; Ensures a consistent starting directory.
+
+
+
+; ***** functions *****  
+; switch to the desktop with the given index number  
+SwitchToDesktop(newDesktop)  
+{  
+    global  
+    if (curDesktop <> newDesktop)  
+    {  
+        GetCurrentWindows(curDesktop)  
+        ;WinGet, windows%curDesktop%, List,,, Program Manager ; get list of all visible windows  
+        ShowHideWindows(curDesktop, false)  
+        ShowHideWindows(newDesktop, true)  
+        curDesktop := newDesktop  
+        Send, {ALT DOWN}{TAB}{ALT UP} ; activate the right window  
+    }  
+    return  
+}  
+; sends the given window from the current desktop to the given desktop  
+SendToDesktop(windowID, newDesktop)  
+{  
+    global  
+    RemoveWindowID(curDesktop, windowID)  
+    ; add window to destination desktop  
+    windows%newDesktop% += 1  
+    i := windows%newDesktop%  
+    windows%newDesktop%%i% := windowID  
+    WinHide, ahk_id %windowID%  
+    Send, {ALT DOWN}{TAB}{ALT UP} ; activate the right window  
+}  
+; sends the currently active window to the given desktop  
+SendActiveToDesktop(newDesktop)  
+{  
+    WinGet, id, ID, A  
+    SendToDesktop(id, newDesktop)  
+}  
+; removes the given window id from the desktop  
+RemoveWindowID(desktopIdx, ID)  
+{  
+    global  
+    Loop, % windows%desktopIdx%  
+    {  
+        if (windows%desktopIdx%%A_Index% = ID)  
+        {  
+            RemoveWindowID_byIndex(desktopIdx, A_Index)  
+            Break  
+        }  
+    }  
+}  
+; this removes the window id at index from desktop number  
+RemoveWindowID_byIndex(desktopIdx, ID_idx)  
+{  
+    global  
+    Loop, % windows%desktopIdx% - ID_idx  
+    {  
+        idx1 := % A_Index + ID_idx - 1  
+        idx2 := % A_Index + ID_idx  
+        windows%desktopIdx%%idx1% := windows%desktopIdx%%idx2%  
+    }  
+    windows%desktopIdx% -= 1  
+}  
+; this builds a list of all currently visible windows in stores it in desktop  
+GetCurrentWindows(index)  
+{  
+    global  
+    WinGet, windows%index%, List,,, Program Manager ; get list of all visible windows  
+    ; now remove task bar “window” (is there a simpler way?)  
+    Loop, % windows%index%  
+    {  
+        id := % windows%index%%A_Index%  
+        WinGetClass, windowClass, ahk_id %id%  
+        if windowClass = Shell_TrayWnd ; remove task bar window id  
+        {  
+            RemoveWindowID_byIndex(index, A_Index)  
+            Break  
+        }  
+    }  
+}  
+; if show=true then shows windows of desktop %index%, otherwise hides them  
+ShowHideWindows(index, show)  
+{  
+    global  
+    Loop, % windows%index%  
+    {  
+        id := % windows%index%%A_Index%  
+        if show  
+            WinShow, ahk_id %id%  
+        else  
+            WinHide, ahk_id %id%  
+    }  
+}  
+; show all windows from all desktops on exit  
+CleanUp:  
+Loop, %numDesktops%  
+ShowHideWindows(A_Index, true)  
+ExitApp
+;===========================================================================
+;=============================>>>>>>>>>>>>>>>>>>>>=======================================================
+
+
+; Run, Notepad.exe, ,Max
+; Run, cmd.exe, ,Max
+; Run, firefox.exe, ,WinMinmize
+; Run, C:\Users\lenovo\AppData\Roaming\360se6\Application\360se.exe, ,Max
+; Run, C:\Users\lenovo\AppData\Roaming\360se6\Application\360se.exe, ,Min
+; Run, cmd.exe, ,Hide
+; Run, %ComSpec% /k dir c:\windows\system32 
+; Run, %ComSpec% /k dir c:\windows\system32
+; Run, %ComSpec% /k d: &&cd python_learn &&ptpython
+; Run, PowerShell  (d:) -and (cd .\python_learn) -and (ptpython)
+; !u::Send ^c !{tab} ^v 
+ 
+
