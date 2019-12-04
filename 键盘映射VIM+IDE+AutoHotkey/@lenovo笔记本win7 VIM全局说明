@@ -1,0 +1,35 @@
+==============================================================================
+@@关于配置文件的说明:
+    1.如果在 用户 目录下配置 _vimrc文件，
+        例如  C:\Users\lenovo\_vimrc
+        那么本机的Gvim会优先读取这个配置文件，
+        而不是读取安装目录下的配置文件(C:Vim\_vimrc)
+    2.VsVim插件也会读取上面 C:\Users\lenovo\_vimrc 的配置文件
+        尚不清楚,未验证VsVim会优先读取_vsvimrc还是_vimrc
+    3.尚不清楚,未验证IdeaVim会优先读取_ideavimrc,还是不会读取_vimrc
+==============================================================================
+--------------------------------<20191204>---------------------------------------------------
+1.linux版的vim,块选的快捷键是Ctrl+V.这与win系统下的粘贴(paste)
+    快捷键相冲突。目前已经发现pycharm和vs2019可以通过设定keymap
+    或者vsvim的kemap选项来取消paste功能恢复块选功能。
+        一个可行的解决方案:
+        在vim配置文件下中定义，如果处于编辑模式(Insert Mode)
+            Ctrl+V用作paste,如果在Normal Mode,Ctrl+V用作Visual Block
+        @:VsVim中把Ctrl+V分配给Vim后,这个快捷键的行为模式恰为上述方案所述
+        @:IdeaVim中把Ctrl+V分配给Vim后,这个快捷键则(无论何种模式)
+            完全失去paste功能,并且尝试更改_ideavimrc亦未有效,估计是这个
+            插件不能访问IDE级别的剪切板
+
+2.找到Gvim与paste快捷键相冲突的解决方案,修改程序目录下的msvin.vim,可以自定义一些行为
+   "   "self:vim的visual block 与win的paste快捷键冲突,此处是原设定
+   "   "使其用作paste功能,现在将下面内容注掉，使CTRL+V恢复其原本的 visual block功能
+   "   "" CTRL-V and SHIFT-Insert are Paste
+   "   "map <C-V>		"+gP
+    map <S-Insert>		"+gP
+   "   "self:但是在Insert Mode下,不需要块选功能.所以在插入模式下,
+   "   "CTRL+V仍用paste功能
+    inoremap <C-V>		"+gP
+
+   "   " Use CTRL-Q to do what CTRL-V used to do
+    "   "noremap <C-Q>		<C-V>
+--------------------------------<20191204>---------------------------------------------------
