@@ -8,15 +8,23 @@
         尚不清楚,未验证VsVim会优先读取_vsvimrc还是_vimrc
     3.尚不清楚,未验证IdeaVim会优先读取_ideavimrc,还是不会读取_vimrc
 ==============================================================================
---------------------------------<20191204>---------------------------------------------------
-0.The official Vim repository https://www.vim.org
-        https://github.com/vim/vim
-1.Gvim 敲入help命令，帮助文档很完善，可以学习和复习一些基本技能
---------------------------------<20191204>---------------------------------------------------
 --------------------------------<20191203>---------------------------------------------------
-1.Gvim7,Vim的GUI版,图形界面适合win7。其安装包以及配合文件都有备份
-    在    <百度网盘(楚)\a编程+计算科学\vim>
-2.Gvim的配置文件,没在默认位置,在
-    C:Vim\_vimrc
-    查看vim配置文件的命令：echo $MYVIMRC
+0.项目地址 https://github.com/VsVim/VsVim
+1.FAQ地址  https://github.com/VsVim/VsVim/wiki/FAQ#vimrc
+2.RC File(配置文件)
+    lenovo笔记本,VsVim的配置文件在
+        C:\Users\lenovo\_vsvimrc
+    以下是官方说明:
+Like Vim, VsVim uses an rc file for its settings. VsVim will check the following candidate rc folders:
+    %HOME%
+    %HOMEDRIVE%%HOMEPATH%
+    %VIM%
+    %USERPROFILE%
+
+Once it finds a folder, it will check for the following candidate rc files:
+    .vsvimrc
+    _vsvimrc
+    .vimrc
+    _vimrc
+
 --------------------------------<20191203>---------------------------------------------------

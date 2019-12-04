@@ -1,20 +1,26 @@
 "==========================下面代码为学习测试代码==========================================
 
-"将光标选中单词大写
-"inoremap <c-u> <esc>viwU<esc>i     "因<c-u>用作<Undo>,本条放弃
-nnoremap <c-u> viwU<esc>
+"self:<待定> 在cmd和insert模式下Alt+r 用作 Redo,因为pycharm的ctrl+R用于搜索快捷键
+inoremap <M-r> <esc><c-r>i
+nnoremap <M-r> <c-r>
 
+"使用Alt+H退出插入模式
+imap <M-k> <ESC>
 
 "============================备选，不常用条目========================================
+"将光标选中单词大写
+"nnoremap <c-u> viwU<esc>
+
 "短横线键-,先删除一行，再粘贴,效果相当于<与下面一行交换位置>
 "noremap - ddp
 "============================备选，不常用条目========================================
 
 
 "----------------------废弃条目--------------------------------------------------
+
 "insert模式下Undo
 "inoremap <M-u> <esc>ui     "因为<M-u>是pycharm菜单快捷键,本条放弃
 "inoremap <c-u> <esc>ui
 
-"insert模式下Redo
-"inoremap <M-r> <esc><M-r>i
+"将光标选中单词大写
+"inoremap <c-u> <esc>viwU<esc>i     "因<c-u>用作<Undo>,本条放弃
