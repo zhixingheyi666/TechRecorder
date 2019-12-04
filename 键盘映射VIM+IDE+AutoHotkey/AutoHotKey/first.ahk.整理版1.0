@@ -29,8 +29,23 @@ $CapsLock::Enter
 ;Alt+F打开文件夹 d:\python_learn
 !f::Run,d:\python_learn
 
+;---------------------------设立WIN+zasx的快捷键----------------------------------------------------
+;设立WIN+zasx的快捷键,zasx并非固定，而是根据日常频率,随时调整对应的快捷键作用目标
+
 ;WIN+a键打开firefox浏览器
 #a::Run, firefox.exe,
+
+;WIN+z键打开Pycharm的注册Server
+#z::Run, C:\程序\IntelliJIDEALicenseServer_windows_amd64.exe,
+
+;WIN+x键打开Pycharm
+#x::Run, "C:\Program Files\JetBrains\PyCharm 2017.2\bin\pycharm64.exe"
+
+;WIN+s键打开VS2019
+#s::Run, devenv.exe,
+;---------------------------设立WIN+zasx的快捷键----------------------------------------------------
+
+
 
 ;----------------------废弃条目--------------------------------------------------
     ;!p::Run, D:\python_learn\powershell.exe.lnk ptpython
