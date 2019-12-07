@@ -8,16 +8,40 @@
         尚不清楚,未验证VsVim会优先读取_vsvimrc还是_vimrc
     3.尚不清楚,未验证IdeaVim会优先读取_ideavimrc,还是不会读取_vimrc
 ==============================================================================
+--------------------------------<20191207>---------------------------------------------------
+1.经研究Alt是win系统和linux部分系统的快捷键，于是取消了Alt+H用作
+    退出插入模式快捷键的功能。同时不再安排Alt类型的快捷键。
+2.更改VS的<代码注释>快捷键为Ctrl+/，与Pycharm一致。但是反注释代码的快捷键
+    行为与Pycharm的再次按下Ctrl+/反注释的简便行为不一致，并且较难自定义实现
+    与Pycharm一致的模式。<反注释代码>经测定Vs中可以用<C-K,C-/>的连续组合快捷键
+    实现。
+3.下面功能Vs和Pycharm的两个vim插件都不支持,Vs有对应的插件但是不完善
+    Pycharm已经安装对应的插件,在IDE中，直接安装插件，在vim中使用如下代码
+"设置相对行号,normal模式首次打开文件显示绝对行号，以后显示相对行号
+"insert模式显示绝对行号
+set nu
+augroup relative_numbser
+ autocmd!
+ autocmd InsertEnter * :set norelativenumber
+ autocmd InsertLeave * :set relativenumber
+augroup END
+https://www.jb51.net/article/128363.htm
+https://github.com/brianschmitt/relativenumber
+https://plugins.jetbrains.com/plugin/7414-relative-line-numbers
+
+--------------------------------<20191207>---------------------------------------------------
 --------------------------------<20191204>---------------------------------------------------
 1.linux版的vim,。目前已经发现pycharm和vs2019可以通过设定keymap
-    或者vsvim的kemap选项来取消paste功能恢复块选功能。
+    或者vsvim的kemap选项来取消paste功能同时<恢复块选功能>。
         一个可行的解决方案:
         在vim配置文件下中定义，如果处于编辑模式(Insert Mode)
             Ctrl+V用作paste,如果在Normal Mode,Ctrl+V用作Visual Block
         @:VsVim中把Ctrl+V分配给Vim后,这个快捷键的行为模式恰为上述方案所述
+            此时另一套快捷键Shift+insert可以实现paste功能
         @:IdeaVim中把Ctrl+V分配给Vim后,这个快捷键则(无论何种模式)
             完全失去paste功能,并且尝试更改_ideavimrc亦未有效,估计是这个
-            插件不能访问IDE级别的剪切板
+            插件不能访问IDE级别的剪切板,
+            不过，用另一套快捷键Shift+insert可以实现paste功能
 
 2.找到Gvim与paste快捷键相冲突的解决方案,修改程序目录下的msvin.vim,可以自定义一些行为
    "   "self:vim的visual block 与win的paste快捷键冲突,此处是原设定

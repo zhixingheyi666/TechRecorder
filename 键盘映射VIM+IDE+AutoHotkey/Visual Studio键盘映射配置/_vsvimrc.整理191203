@@ -4,8 +4,18 @@
 inoremap <M-r> <esc><c-r>i
 nnoremap <M-r> <c-r>
 
-"使用Alt+H退出插入模式
-imap <M-k> <ESC>
+""self:因在Alt多被系统占用以及Vsvim中未实现Alt键的诸多功能，暂停使用Alt+H退出插入模式
+"imap <M-k> <ESC>
+
+"设置相对行号,normal模式首次打开文件显示绝对行号，以后显示相对行号
+"insert模式显示绝对行号
+set nu
+augroup relative_numbser
+ autocmd!
+ autocmd InsertEnter * :set norelativenumber
+ autocmd InsertLeave * :set relativenumber
+augroup END
+
 
 "============================备选，不常用条目========================================
 "将光标选中单词大写
